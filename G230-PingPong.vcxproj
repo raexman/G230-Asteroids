@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Asteroid.cpp" />
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Bar.cpp" />
     <ClCompile Include="Brick.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="MovableGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asteroid.h" />
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Bar.h" />
     <ClInclude Include="Brick.h" />

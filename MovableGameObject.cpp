@@ -140,9 +140,10 @@ bool MovableGameObject::CheckCollisionWith(GameObject *other)
 	{
 		if (pointOfContact.x >= -1 && pointOfContact.x <= 1 && pointOfContact.y >= -1 && pointOfContact.y <= 1)
 		{
-			
-			other->Collided(pointOfContact);
 			this->Collided(pointOfContact);
+			pointOfContact.x *= -1;
+			pointOfContact.y *= -1;
+			other->Collided(pointOfContact);
 			inContact = true;
 
 			return true;
@@ -163,5 +164,5 @@ void MovableGameObject::Collided(sf::Vector2f point)
 {
 	int margin = 10;
 	SetDirection(point.x, point.y);
-	//this->MoveTo(margin * direction.x, margin * direction.y);
+	this->MoveTo(margin * direction.x, margin * direction.y);
 }

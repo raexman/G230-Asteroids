@@ -11,6 +11,7 @@
 #include "MovableGameObject.h"
 #include "Brick.h"
 #include "Bar.h"
+#include "Asteroid.h"
 
 void PlayMusic();
 void LoadBackground();
@@ -287,6 +288,38 @@ void CheckBrickCollisions(Ball *ball)
 		}
 	}
 }
+
+vector<unique_ptr<Asteroid>> asteroids;
+
+void CreateAsteroids()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		float asteroidRadius = rand() % 100;
+		sf::Vector2f asteroidSpeed(200, 200);
+
+		Asteroid *asteroid;
+		brickTexture.loadFromFile("brick_destroyed.png");
+		asteroid = new Asteroid(asteroidSpeed, 1, sf::Vector2f(asteroidRadius, asteroidRadius), sf::Vector2f(rand() % window->getSize().x, rand() % window->getSize().y), window, brickTexture);
+		asteroid->SetDirection(1, 1);
+		asteroid->StartMoving();
+		asteroids.push_back(unique_ptr<Asteroid>(asteroid));
+	}
+
+}
+
+void CheckAsteroidCollisions(Ball *ball)
+{
+	for (int i = 0; i < asteroids.size() - 1; i++)
+	{
+		
+		for (int j = 1; j < asteroids.size(); j++)
+		{
+			asteroids[i]->CheckCollisionWith(asteroids[j].get());
+		}
+	}
+}
+
 void PlayLevel(int level)
 {
 	barTexture.loadFromFile("paddle.jpg");
@@ -300,7 +333,8 @@ void PlayLevel(int level)
 	switch (level)
 	{
 		case 1:
-			CreateLevel1Bricks();
+			CreateAsteroids();
+			//CreateLevel1Bricks();
 			break;
 		case 2:
 			CreateLevel2Bricks();
@@ -315,8 +349,6 @@ void PlayLevel(int level)
 			CreateLevel1Bricks();
 			break;
 	}
-
-	
 
 	sf::Text title;
 	title.setFont(font);
@@ -380,15 +412,16 @@ void PlayLevel(int level)
 		ball.Update(deltaTime);
 		
 		//Draw bricks.
-		for (int i = 0; i < bricks.size(); i++)
+		for (int i = 0; i < asteroids.size(); i++)
 		{
-			bricks[i]->Update(deltaTime);
+			asteroids[i]->Update(deltaTime);
 		}
 
 
 		
 		//Check collisions.
 		CheckBrickCollisions(&ball);
+		CheckAsteroidCollisions(&ball);
 		ball.CheckCollisionWith(&bar, false);
 		
 		//Display scene.
@@ -399,11 +432,13 @@ void PlayLevel(int level)
 			isPlaying = false;
 		}
 
+		/*
 		if ((bricks.size() - unbreakable) == 0)
 		{
 			isPlaying = false;
 			isWon = true;
 		}
+		*/
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1))
 		{

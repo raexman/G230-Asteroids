@@ -96,8 +96,9 @@ bool Ball::CheckCollisionWith(GameObject *other, bool drillable)
 void Ball::Collided(sf::Vector2f point)
 {
 	int margin = 10;
+
 	SetDirection(point.x, point.y);
-	AddSpeed(5 * abs(point.x), 5 * abs(point.y));
+	AddSpeed(5, 5);
 	this->MoveTo(margin * direction.x, margin * direction.y);
 
 	std::cout << "SPEED X: " << speed.x << " | Y: " << speed.y << std::endl;

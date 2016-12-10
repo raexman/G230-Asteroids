@@ -105,6 +105,7 @@ sf::Vector2f GameObject::GetPointOfContact(GameObject *other)
 		float verticalDistance = thisCenterPoint.y - otherCenterPoint.y;
 		float horizontalDistance = thisCenterPoint.x - otherCenterPoint.x;
 
+
 		sf::Vector2f base((thisSize.x + otherSize.x) * 0.5f, (thisSize.y + otherSize.y) * 0.5f);
 		
 		//There's a greater vertical distance.
