@@ -17,6 +17,7 @@ protected:
 	sf::Texture texture;
 	bool isActive;
 	int HP;
+	const float PI = 3.14159265359f;
 
 public:
 	//Variables.

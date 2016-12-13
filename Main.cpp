@@ -24,7 +24,6 @@ void CreateLevel1Bricks();
 void CreateLevel2Bricks();
 void CreateLevel3Bricks();
 void CreateLevel4Bricks();
-void CheckBrickCollisions(Ball *ball);
 
 using namespace std;
 
@@ -56,7 +55,7 @@ int score = 0;
 int rounds = 0;
 int unbreakable = 0;
 
-int WinMain()
+int main()
 {
 	font.loadFromFile("AmericanCaptain.ttf");
 
@@ -249,58 +248,20 @@ void CreateLevel4Bricks()
 	}
 }
 
-void CheckBrickCollisions(Ball *ball)
-{
-	for (int i = 0; i < bricks.size(); i++)
-	{
-		Brick *br = bricks[i].get();
-		bool hasCollided = ball->CheckCollisionWith(br, true);
-		if (hasCollided)
-		{
-			std::string soundFx = "hit.wav";
-			score++;
 
-			if (bricks[i]->PowerUp == "drill")
-			{
-				soundFx = "powerup.wav";
-				ball->isDrilling = true;
-			}
-			else if (bricks[i]->PowerUp == "slowmo")
-			{
-				soundFx = "powerup.wav";
-				ball->SetSpeed(100, 100);
-				ball->isDrilling = false;
-			}
-			
-			if (br->Dead())
-			{
-				soundFx = "explosion.wav";
-				buffer.loadFromFile(soundFx);
-				sound.setBuffer(buffer);
-				sound.play();
-				bricks.erase(bricks.begin() + i);
-				continue;
-			}
-
-			buffer.loadFromFile(soundFx);
-			sound.setBuffer(buffer);
-			sound.play();
-		}
-	}
-}
 
 vector<unique_ptr<Asteroid>> asteroids;
 
 void CreateAsteroids()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		float asteroidRadius = rand() % 100;
 		sf::Vector2f asteroidSpeed(200, 200);
 
 		Asteroid *asteroid;
 		brickTexture.loadFromFile("brick_destroyed.png");
-		asteroid = new Asteroid(asteroidSpeed, 1, sf::Vector2f(asteroidRadius, asteroidRadius), sf::Vector2f(rand() % window->getSize().x, rand() % window->getSize().y), window, brickTexture);
+		asteroid = new Asteroid(asteroidSpeed, 1, sf::Vector2f(asteroidRadius, asteroidRadius), sf::Vector2f(rand() % window->getSize().x - asteroidRadius, rand() % window->getSize().y - asteroidRadius), window, brickTexture, false, true);
 		asteroid->SetDirection(1, 1);
 		asteroid->StartMoving();
 		asteroids.push_back(unique_ptr<Asteroid>(asteroid));
@@ -315,7 +276,13 @@ void CheckAsteroidCollisions(Ball *ball)
 		
 		for (int j = 1; j < asteroids.size(); j++)
 		{
-			asteroids[i]->CheckCollisionWith(asteroids[j].get());
+			ball->CheckCollisionWith(asteroids[i].get());
+
+			if (asteroids[i]->Killed)
+			{
+				asteroids.erase(asteroids.begin() + i);
+				continue;
+			}
 		}
 	}
 }
@@ -325,8 +292,7 @@ void PlayLevel(int level)
 	barTexture.loadFromFile("paddle.jpg");
 	ballTexture.loadFromFile("ball.png");
 
-	Bar bar(sf::Vector2f(100, 30), sf::Vector2f((window->getSize().x - 50) * 0.5f, window->getSize().y - 80), window, barTexture);
-	Ball ball(speed, 3, sf::Vector2f(20,20), sf::Vector2f(0,0), window, ballTexture);
+	Bar bar(sf::Vector2f(30, 30), sf::Vector2f((window->getSize().x - 50) * 0.5f, window->getSize().y - 80), window, barTexture);
 
 	level = level % 4 + 1;
 
@@ -352,7 +318,7 @@ void PlayLevel(int level)
 
 	sf::Text title;
 	title.setFont(font);
-	title.setString("Lives: " + to_string(ball.GetLives()));
+	title.setString("Lives: " );
 	title.setCharacterSize(21);
 	title.setFillColor(sf::Color::Yellow);
 	title.setOutlineColor(sf::Color::Black);
@@ -393,7 +359,7 @@ void PlayLevel(int level)
 		window->draw(background);
 		
 		//Draw title.
-		title.setString("Lives: " + to_string(ball.GetLives()));
+		title.setString("Lives: ");
 		scoreLabel.setString("Score: " + to_string(score));
 		window->draw(title);
 		window->draw(scoreLabel);
@@ -402,14 +368,6 @@ void PlayLevel(int level)
 		
 		//Draw ball.
 		//Check ball status.
-		if (ball.isResting)
-		{
-			//Keep ball
-			float ballX = bar.GetPosition().x + (bar.GetSize().x - ball.GetSize().x) * 0.5f;
-			float ballY = bar.GetPosition().y - ball.GetSize().y;
-			ball.SetPosition(ballX, ballY);
-		}
-		ball.Update(deltaTime);
 		
 		//Draw bricks.
 		for (int i = 0; i < asteroids.size(); i++)
@@ -420,14 +378,12 @@ void PlayLevel(int level)
 
 		
 		//Check collisions.
-		CheckBrickCollisions(&ball);
-		CheckAsteroidCollisions(&ball);
-		ball.CheckCollisionWith(&bar, false);
+		if(bar.bullet) CheckAsteroidCollisions(bar.bullet);
 		
 		//Display scene.
 		window->display();
 
-		if (ball.Dead())
+		if (bar.Dead())
 		{
 			isPlaying = false;
 		}
@@ -465,20 +421,9 @@ void PlayLevel(int level)
 			isWon = true;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J))
-		{
-			ball.AddSpeed(1, 1);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::K))
-		{
-			ball.AddSpeed(-1, -1);
-		}
-
 
 	}
 
-	bricks.erase(bricks.begin(), bricks.end());
-	speed = ball.GetSpeed();
 
 	if (!isWon)
 		Victory();

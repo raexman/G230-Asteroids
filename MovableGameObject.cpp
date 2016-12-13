@@ -1,8 +1,19 @@
 #include "MovableGameObject.h"
 
-MovableGameObject::MovableGameObject(sf::RenderWindow *window, sf::Texture texture):GameObject(window, texture)
+MovableGameObject::MovableGameObject(sf::RenderWindow *window, sf::Texture texture) :GameObject(window, texture)
 {
 	SetWalls(true, true, true, true);
+}
+
+MovableGameObject::MovableGameObject(sf::RenderWindow *window, sf::Texture texture, bool hasWalls) : GameObject(window, texture)
+{
+	SetWalls(hasWalls, hasWalls, hasWalls, hasWalls);
+}
+
+MovableGameObject::MovableGameObject(sf::RenderWindow *window, sf::Texture texture, bool hasWalls, bool isWrapping) : GameObject(window, texture)
+{
+	this->isWrapping = isWrapping;
+	SetWalls(hasWalls, hasWalls, hasWalls, hasWalls);
 }
 
 MovableGameObject::MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::Color color, sf::RenderWindow *window, sf::Texture texture):GameObject(size, position, color, window, texture)
@@ -10,9 +21,14 @@ MovableGameObject::MovableGameObject(sf::Vector2f size, sf::Vector2f position, s
 	SetWalls(true, true, true, true);
 }
 
-MovableGameObject::MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture):GameObject(size, position, window, texture)
+MovableGameObject::MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture) : GameObject(size, position, window, texture)
 {
 	SetWalls(true, true, true, true);
+}
+MovableGameObject::MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture, bool hasWalls, bool isWrapping) : GameObject(size, position, window, texture)
+{
+	this->isWrapping = isWrapping;
+	SetWalls(hasWalls, hasWalls, hasWalls, hasWalls);
 }
 
 MovableGameObject::~MovableGameObject()
@@ -92,6 +108,28 @@ void MovableGameObject::Move(){
 		}
 	}
 
+	if (isWrapping)
+	{
+
+		if (view.getPosition().x + view.getSize().x < 0)
+		{
+			view.setPosition(view.getSize().x, view.getPosition().y);
+		}
+		else if (view.getPosition().x > window->getSize().x)
+		{
+			view.setPosition(0, view.getPosition().y);
+		}
+
+		if (view.getPosition().y + view.getSize().y < 0)
+		{
+			view.setPosition(view.getPosition().x, view.getSize().y);
+		}
+		else if (view.getPosition().y > window->getSize().y)
+		{
+			view.setPosition(view.getPosition().x, 0);
+		}
+	}
+
 	//Automatically move object.
 	sf::Vector2f distance(speed.x * direction.x * deltaTime, speed.y * direction.y * deltaTime);
 	this->view.move(distance);
@@ -163,6 +201,7 @@ bool MovableGameObject::CheckCollisionWith(GameObject *other)
 void MovableGameObject::Collided(sf::Vector2f point)
 {
 	int margin = 10;
-	SetDirection(point.x, point.y);
+	std::cout << "PointX: " << point.x << " PointY: " << point.y << std::endl;
+	SetDirection(point.x/abs(point.x), point.y / abs(point.y));
 	this->MoveTo(margin * direction.x, margin * direction.y);
 }

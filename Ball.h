@@ -1,5 +1,6 @@
 #pragma once
 #include "MovableGameObject.h"
+#include "Asteroid.h"
 class Ball :
 	public MovableGameObject
 {
@@ -11,8 +12,8 @@ public:
 	~Ball();
 	void Init();
 	void Update(float deltaTime);
-	bool CheckCollisionWith(GameObject *other, bool drillable = false);
-	void Collided(sf::Vector2f point);
+	bool CheckCollisionWith(Asteroid *other, bool drillable = false);
+	void Collided();
 	void Hurt(int damage = 1);
 	int GetLives();
 };

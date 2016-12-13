@@ -11,10 +11,14 @@ protected:
 	bool bottomWall;
 	bool leftWall;
 	bool isMoving;
+	bool isWrapping;
 
 public:
 	MovableGameObject(sf::RenderWindow *window, sf::Texture texture);
+	MovableGameObject(sf::RenderWindow *window, sf::Texture texture, bool hasWalls);
+	MovableGameObject(sf::RenderWindow *window, sf::Texture texture, bool hasWalls, bool isWrapping);
 	MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture);
+	MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture, bool hasWalls, bool isWrapping);
 	MovableGameObject(sf::Vector2f size, sf::Vector2f position, sf::Color color, sf::RenderWindow *window, sf::Texture texture);
 	~MovableGameObject();
 	virtual void Update(float deltaTime);
