@@ -137,19 +137,21 @@ void Ship::SetBurst()
     if(hasBurstShot)
     {
         bulletsPerShot = 3;
-    }
-    else
-    {
-        bulletsPerShot = 1;
+		rateOfFire = 0.1f;
     }
 }
 void Ship::SetTrishot()
 {
-    
+	if (hasTrishot)
+	{
+		bulletsPerShot = 3;
+		rateOfFire = 0;
+	}
 }
 void Ship::Shoot()
 {
     SetBurst();
+	SetTrishot();
     isShooting = true;
     bulletsShot = 0;
     
@@ -166,7 +168,15 @@ void Ship::Shooting()
     {
         if(rateOfFire <= (currentTime - lastBullet))
         {
-            Bullet *bullet = new Bullet(Vector2f(200,200), this->view.getRotation(), Vector2f(5,5), window, bucket, this);
+			float bulletAngle = this->view.getRotation();
+
+			if (hasTrishot)
+			{
+				//Change the angle so it bursts in a fork way.
+				bulletAngle = bulletAngle - 25 + 25 * bulletsShot;
+			}
+
+            Bullet *bullet = new Bullet(Vector2f(200,200), bulletAngle, Vector2f(5,5), window, bucket, this);
             bullet->view.setPosition(this->view.getPosition());
             //bullets.push_back(bullet);
             bulletsShot++;

@@ -136,13 +136,17 @@ void Level1()
 	//Create rect;
 	for (int i = 0; i < 3; i++)
 	{
+		//Do a dice roll, if it's 0, give armor.
+		bool hasArmor = (rand() % 10) < 1;
 		Asteroid *asteroid = new Asteroid(Vector2f(10, 10), rand() % 360, Vector2f(50, 50), window, &bucket);
 		asteroid->view.setPosition(rand() % window->getSize().x, rand() % window->getSize().y);
+		asteroid->armor = hasArmor;
 		bucket.Push(asteroid);
 	}
 
 	Ship *ship = new Ship(Vector2f(100, 100), Vector2f(0, 0), Vector2f(20, 20), window, &bucket);
-	//ship->hasBurstShot = true;
+	ship->hasBurstShot = true;
+	//ship->hasTrishot = true;
 	ship->view.setPosition(window->getSize().x * 0.5f, window->getSize().y * 0.5f);
 	bucket.Push(ship);
 

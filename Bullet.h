@@ -19,6 +19,7 @@ public:
 	Ship *ship;
     float lifeSpan = 3;
     float birthTime;
+
     //States;
     void Hurt(){ if(armor > 0) armor--; else hp--; }; //hurt
     void Hit(){ std::cout << type << " was hit!" << std::endl; Hurt(); if(hp <= 0) isActive = false; }; //hit by projectile
