@@ -18,6 +18,27 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Asteroid.h" />
+    <ClInclude Include="BucketGrid.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="ControlledObject.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="MovingObject.h" />
+    <ClInclude Include="PowerUp.h" />
+    <ClInclude Include="Ship.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Asteroid.cpp" />
+    <ClCompile Include="BucketGrid.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="ControlledObject.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MovingObject.cpp" />
+    <ClCompile Include="PowerUp.cpp" />
+    <ClCompile Include="Ship.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2C6FBE37-CE05-477C-87A6-2226220931F3}</ProjectGuid>
     <RootNamespace>G230PingPong</RootNamespace>
@@ -133,23 +154,6 @@
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Asteroid.cpp" />
-    <ClCompile Include="Ball.cpp" />
-    <ClCompile Include="Bar.cpp" />
-    <ClCompile Include="Brick.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MovableGameObject.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Asteroid.h" />
-    <ClInclude Include="Ball.h" />
-    <ClInclude Include="Bar.h" />
-    <ClInclude Include="Brick.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="MovableGameObject.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

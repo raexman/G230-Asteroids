@@ -1,24 +1,114 @@
+//
+//  Asteroid.cpp
+//  Asteroids
+//
+//  Created by Rogelio Espinoza on 12/13/16.
+//  Copyright © 2016 Rogelio Espinoza. All rights reserved.
+//
+
 #include "Asteroid.h"
+#include "BucketGrid.h"
+#include "PowerUp.h"
 
+using namespace sf;
 
-
-Asteroid::Asteroid(sf::Vector2f speed, int lives, sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture, bool hasWalls, bool isWrapping) :MovableGameObject(size, position, window, texture, hasWalls, isWrapping)
+Asteroid::Asteroid(Vector2f speed, float angle, Vector2f size, RenderWindow *window, BucketGrid *bucket):MovingObject(speed, angle, size, window, bucket)
 {
-	this->speed = speed;
+    this->type = "asteroid";
+    Init();
+}
+Asteroid::Asteroid(Vector2f speed, Vector2f direction, Vector2f size, RenderWindow *window, BucketGrid *bucket):MovingObject(speed, direction, size, window,bucket)
+{
+    this->type = "asteroid";
+    Init();
+}
+Asteroid::Asteroid(Vector2f speed, Vector2f direction, Vector2f size, Vector2f position, RenderWindow *window, BucketGrid *bucket):MovingObject(speed,direction,size,position,window,bucket)
+{
+    this->type = "asteroid";
+    Init();
 }
 
+Asteroid::Asteroid(Vector2f speed, Vector2f direction, Vector2f size, Vector2f position, Texture texture, RenderWindow *window, BucketGrid *bucket):MovingObject(speed,direction,size,position,texture,window,bucket)
+{
+    this->type = "asteroid";
+    Init();
+}
 
 Asteroid::~Asteroid()
 {
+    
 }
 
-void Asteroid::Shot()
+void Asteroid::Init()
 {
-	Killed = true;
-	//Subdivide;
-	if (level < 3)
-	{
+    texture.loadFromFile("Assets/images/asteroid.png");
+    view.setTexture(&texture);
+}
 
+void Asteroid::Hit()
+{
+    this->Hurt();
+    std::cout << "HP: " << hp << std::endl;
+    if(hp <= 0)
+    {
+
+        Destroy();
+    }
+}
+
+void Asteroid::Collided(GameObject *other)
+{
+    
+    if(other->type == "asteroid")
+    {
+        Vector2f distance;
+
+        direction.x *= -1;
+        direction.y *= -1;
+        
+        this->view.move(direction.x, direction.y);
+    }
+    
+    else if(other->type == "bullet")
+    {
+        this->Hit();
+    }
+    
+    else if(other->type == "ship")
+    {
+    }
+    
+   // std::cout << this->type << " collided with " << other->type << std::endl;
+}
+
+void Asteroid::Destroy()
+{
+    //std::cout << "DESTROY!" << std::endl;
+    Subdivide();
+    this->isActive = false;
+    //bucket->Remove(bucket->GetBucket(this->view.getPosition()), this);
+    
+}
+
+void Asteroid::Subdivide()
+{
+    if(level > 2) return;
+    //float currentMagnitude = sqrtf( pow(direction.x, 2.0f) + pow(direction.y, 2.0f) );
+    float currentAngle = atanf(direction.y / direction.x);
+
+    level++;
+    
+    for(int i = 0; i < 2; i++)
+    {
+        Asteroid *childAsteroid = new Asteroid(Vector2f(speed.x * 2, speed.y * 2), currentAngle + 135 * i, Vector2f(size.x*0.66f, size.y*0.66f), window, bucket);
+        childAsteroid->level = level;
+        childAsteroid->view.setPosition(this->view.getPosition());
+
+        bucket->Push(childAsteroid);
+    }
+
+	if (rand() % 2 > 0)
+	{
+		PowerUp powerUp(rand() % 4, Vector2f(20,20), window, bucket);
 	}
-	//Destroy;
 }

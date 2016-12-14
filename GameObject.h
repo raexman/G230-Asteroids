@@ -1,46 +1,84 @@
+//
+//  GameObject.h
+//  Asteroids
+//
+//  Created by Rogelio Espinoza on 12/13/16.
+//  Copyright © 2016 Rogelio Espinoza. All rights reserved.
+//
+
 #pragma once
-#include <SFML\Graphics.hpp>
-#include <SFML\Audio.hpp>
-#include <iostream>
+
 #include <stdio.h>
-#include <string>
+#include <iostream>
+#include <math.h>
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
+using namespace sf;
+
+class BucketGrid;
 
 class GameObject
 {
-protected:
-	//Variables.
-	float deltaTime;
-	sf::RenderWindow *window;
-	sf::RectangleShape view;
-	sf::SoundBuffer buffer;
-	sf::Sound sound;
-	sf::Texture texture;
-	bool isActive;
-	int HP;
-	const float PI = 3.14159265359f;
-
 public:
-	//Variables.
-	bool inContact;
+    const float PI = 3.14159265359f;
+    
+    //Time;
+    float currentTime;
+    float deltaTime;
 
-	//Functions.
-	GameObject(sf::RenderWindow *window, sf::Texture texture);
-	GameObject(sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture);
-	GameObject(sf::Vector2f size, sf::Vector2f position, sf::Color color, sf::RenderWindow *window, sf::Texture texture);
-	~GameObject();
-	//States.
-	virtual void Init();
-	virtual void Update(float deltaTime);
-	virtual void Draw();
-	virtual void Collided(sf::Vector2f point);
-	virtual bool Dead();
-	//Collision.
-	virtual bool CheckCollisionWith(GameObject *other);
-	virtual sf::Vector2f GetPointOfContact(GameObject *other);
-	//Getters/Setters
-	virtual void SetPosition(float x, float y);
-	virtual sf::Vector2f GetPosition();
-	virtual void SetSize(float x, float y);
-	virtual sf::Vector2f GetSize();
+    //Shape;
+    Vector2f size;
+    Vector2f position;
+    Vector2f rotation;
+    CircleShape view;
+    Texture texture;
+    
+    //Basic;
+    int armor = 0;
+    int hp = 1;
+    bool isActive = true;
+    std::string type;
+    
+    //Audiovisual;
+    BucketGrid *bucket;
+    RenderWindow *window;
+    SoundBuffer buffer;
+    Sound sound;
+
+    //Invulnerability;
+    float invulnerabilityDuration = 5;
+    float invulnerabilityStartTime;
+    virtual void StartInvulnerability();
+    
+    //Actions
+    virtual bool CheckCollisionWith(GameObject *other);
+    float length(Vector2f v);
+    
+    //States;
+    virtual void Hit() = 0; //hit by projectile
+    virtual void Hurt() = 0; //hurt
+    virtual void Collided(GameObject *other) = 0; //collided
+    
+    //Getters/Setters;
+    virtual Vector2f getCenter() { return view.getOrigin(); };
+    bool hasArmor(){ return armor > 0; };
+    int addArmor(int value = 1){ armor+=value; return armor; };
+    int removeArmor(int value = 1){ armor-=value; return armor; };
+    int addLife(int value = 1){ hp+=value; return hp; };
+    int removeLife(int value = 1){hp-=value; return hp; };
+    bool isDead(){ return hp <= 0; };
+    bool isInvulnerable(){ return invulnerabilityDuration > currentTime - invulnerabilityStartTime; };
+    
+    //Render.
+    void CreateView();
+    virtual void Update(float deltaTime) = 0;
+    virtual void Draw();
+    
+    //Tructors.
+    GameObject(Vector2f size, RenderWindow *window, BucketGrid *bucket);
+    GameObject(Vector2f size, Vector2f position, RenderWindow *window, BucketGrid *bucket);
+    GameObject(Vector2f size, Vector2f position, Texture texture, RenderWindow *window, BucketGrid *bucket);
+    ~GameObject();
+
 };
-

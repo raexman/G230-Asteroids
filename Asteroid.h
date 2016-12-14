@@ -1,15 +1,40 @@
-#pragma once
-#include "MovableGameObject.h"
-class Asteroid :
-	public MovableGameObject
-{
-protected:
-	int level;
-public:
-	bool Killed;
-	Asteroid(sf::Vector2f speed, int lives, sf::Vector2f size, sf::Vector2f position, sf::RenderWindow *window, sf::Texture texture, bool hasWalls, bool isWrapping);
-	~Asteroid();
-	//void Collided(sf::Vector2f point);
-	void Shot();
-};
+//
+//  Asteroid.h
+//  Asteroids
+//
+//  Created by Rogelio Espinoza on 12/13/16.
+//  Copyright © 2016 Rogelio Espinoza. All rights reserved.
+//
 
+#pragma once
+
+#include <stdio.h>
+#include <iostream>
+#include "MovingObject.h"
+
+class Asteroid : public MovingObject
+{
+public:
+    int level = 1;
+    //States;
+    void Hit(); //hit by projectile
+    void Hurt(){ if(armor > 0) {armor--; }else{ hp--;} }; //hurt
+    void Collided(GameObject *other); //collided
+    
+    //Getters/Setters;
+	Vector2f getCenter() { return view.getPosition(); };
+    
+    //Actions;
+    
+    //Tructors.
+    Asteroid(Vector2f speed, float angle, Vector2f size, RenderWindow *window, BucketGrid *bucket);
+    Asteroid(Vector2f speed, Vector2f direction, Vector2f size, RenderWindow *window, BucketGrid *bucket);
+    Asteroid(Vector2f speed, Vector2f direction, Vector2f size, Vector2f position, RenderWindow *window, BucketGrid *bucket);
+    Asteroid(Vector2f speed, Vector2f direction, Vector2f size, Vector2f position, Texture texture, RenderWindow *window, BucketGrid *bucket);
+    ~Asteroid();
+    
+    void Init();
+    void Destroy();
+    void Subdivide();
+
+};
