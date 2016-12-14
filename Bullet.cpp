@@ -42,8 +42,9 @@ void Bullet::Collided(GameObject *other)
     {
         //ship->bullets.erase(remove(ship->bullets.begin(), ship->bullets.end(), this));
 		Asteroid *target = dynamic_cast<Asteroid*>(other);
-		ship->score = target->level * 100;
+		ship->score += target->level * 100;
         isActive = false;
+		bucket->Pop(this);
     }
 }
 
@@ -65,6 +66,7 @@ void Bullet::Update(float deltaTime)
     if(lifeSpan <= (currentTime - birthTime))
     {
         this->isActive = false;
+		bucket->Pop(this);
     }
     Move();
     Wrap();

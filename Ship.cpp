@@ -37,6 +37,7 @@ Ship::~Ship()
 
 void Ship::Init()
 {
+	this->type = "ship";
     texture.loadFromFile("spaceship.png");
     //view.setTextureRect(IntRect(0, 0, 10, 10));
     view.setTexture(&texture);
@@ -86,8 +87,9 @@ void Ship::Collided(GameObject *other)
     {
         this->Hit();
     }
-	if (other->type == "powerup")
+	else if (other->type == "powerup")
 	{
+		std::cout << "POWERUP! " << std::endl;
 		PowerUp *powerup = dynamic_cast<PowerUp*>(other);
 		GetPowerUp(powerup->power);
 	}
@@ -96,20 +98,22 @@ void Ship::GetPowerUp(PowerUp::PowerType power)
 {
 	switch (power)
 	{
-	case PowerUp::PowerType::burst:
-		hasBurstShot = true;
-		break;
-	case PowerUp::PowerType::shield:
-		armor++;
-		break;
-	case PowerUp::PowerType::trishot:
-		hasTrishot = true;
-		break;
-	case PowerUp::PowerType::superstar:
-		StartInvulnerability();
-		break;
-	default:
-		break;
+		case PowerUp::PowerType::burst:
+			hasBurstShot = true;
+			hasTrishot = false;
+			break;
+		case PowerUp::PowerType::shield:
+			armor++;
+			break;
+		case PowerUp::PowerType::trishot:
+			hasTrishot = true;
+			hasBurstShot = false;
+			break;
+		case PowerUp::PowerType::superstar:
+			StartInvulnerability();
+			break;
+		default:
+			break;
 	}
 }
 
@@ -132,12 +136,22 @@ void Ship::ShootBomb()
 {
     
 }
+void Ship::ResetAmmo()
+{
+	if (!hasBurstShot && !hasTrishot)
+	{
+		bulletsPerShot = 1;
+		rateOfFire = 0;
+		shotCooldown = 0.25f;
+	}
+}
 void Ship::SetBurst()
 {
     if(hasBurstShot)
     {
         bulletsPerShot = 3;
 		rateOfFire = 0.1f;
+		shotCooldown = 0.5f;
     }
 }
 void Ship::SetTrishot()
@@ -146,10 +160,12 @@ void Ship::SetTrishot()
 	{
 		bulletsPerShot = 3;
 		rateOfFire = 0;
+		shotCooldown = 0.35f;
 	}
 }
 void Ship::Shoot()
 {
+	ResetAmmo();
     SetBurst();
 	SetTrishot();
     isShooting = true;

@@ -58,15 +58,18 @@ void Asteroid::Hit()
 
 void Asteroid::Collided(GameObject *other)
 {
-    
     if(other->type == "asteroid")
     {
-        Vector2f distance;
+		if (collisionCooldown <= currentTime - collisionStart)
+		{
+			Vector2f distance;
 
-        direction.x *= -1;
-        direction.y *= -1;
-        
-        this->view.move(direction.x, direction.y);
+			direction.x *= -1;
+			direction.y *= -1;
+
+			this->view.move(direction.x * 5, direction.y * 5);
+			collisionStart = currentTime;
+		}
     }
     
     else if(other->type == "bullet")
@@ -86,8 +89,7 @@ void Asteroid::Destroy()
     //std::cout << "DESTROY!" << std::endl;
     Subdivide();
     this->isActive = false;
-    //bucket->Remove(bucket->GetBucket(this->view.getPosition()), this);
-    
+	bucket->Pop(this);
 }
 
 void Asteroid::Subdivide()
@@ -107,8 +109,14 @@ void Asteroid::Subdivide()
         bucket->Push(childAsteroid);
     }
 
-	if (rand() % 2 > 0)
+	if (rand() % 3 < 1)
 	{
-		PowerUp powerUp(rand() % 4, Vector2f(20,20), window, bucket);
+		PowerUp *powerUp = new PowerUp(rand() % 4, Vector2f(20,20), window, bucket);
+		powerUp->view.setPosition(this->view.getPosition());
+		powerUp->type = "powerup";
+		bucket->Push(powerUp);
+
 	}
+
+
 }

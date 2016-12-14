@@ -24,7 +24,7 @@ public:
     const float PI = 3.14159265359f;
     
     //Time;
-    float currentTime;
+    float currentTime = 0;
     float deltaTime;
 
     //Shape;
@@ -48,7 +48,7 @@ public:
 
     //Invulnerability;
     float invulnerabilityDuration = 5;
-    float invulnerabilityStartTime;
+    float invulnerabilityStartTime = 0;
     virtual void StartInvulnerability();
     
     //Actions

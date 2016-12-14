@@ -29,7 +29,7 @@ public:
     
     int bulletsPerShot = 1;
     float rateOfFire = 0.05f;
-    float shotCooldown = 1;
+    float shotCooldown = 0.25f;
     float lastShot;
     float lastBullet;
     float bulletsShot;
@@ -51,6 +51,7 @@ public:
     //Actions;
     Vector2f Move();
     void ShootBomb();
+	void ResetAmmo();
     void SetBurst();
     void SetTrishot();
     void Shoot();

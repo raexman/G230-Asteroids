@@ -23,6 +23,7 @@
 void Menu();
 void GameOver();
 void Level1();
+void Level2();
 void Exit();
 
 sf::Font font;
@@ -34,8 +35,11 @@ Ship *ship;
 
 int margin = 10;
 int score = 0;
+bool isPlaying;
+bool hasWon;
+bool goMenu;
 
-int main()
+int WinMain()
 {
     
 	// Create the main window
@@ -132,9 +136,9 @@ void Exit()
 void Level1()
 {
 	BucketGrid bucket;
-
+	isPlaying = true;
 	//Create rect;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		//Do a dice roll, if it's 0, give armor.
 		bool hasArmor = (rand() % 10) < 1;
@@ -145,7 +149,7 @@ void Level1()
 	}
 
 	Ship *ship = new Ship(Vector2f(100, 100), Vector2f(0, 0), Vector2f(20, 20), window, &bucket);
-	ship->hasBurstShot = true;
+	//ship->hasBurstShot = true;
 	//ship->hasTrishot = true;
 	ship->view.setPosition(window->getSize().x * 0.5f, window->getSize().y * 0.5f);
 	bucket.Push(ship);
@@ -159,6 +163,15 @@ void Level1()
 	title.setOutlineThickness(2);
 	title.setPosition(window->getSize().x - title.getLocalBounds().width - margin * 2, window->getSize().y - title.getLocalBounds().height - margin * 2);
 
+	sf::Text title2;
+	title2.setFont(font);
+	title2.setString("None                       Armor: " + to_string(ship->armor));
+	title2.setCharacterSize(21);
+	title2.setFillColor(sf::Color::Yellow);
+	title2.setOutlineColor(sf::Color::Black);
+	title2.setOutlineThickness(2);
+	title2.setPosition(title.getPosition().x - title2.getLocalBounds().width - margin * 10, window->getSize().y - title2.getLocalBounds().height - margin * 2);
+
 	sf::Text scoreLabel;
 	scoreLabel.setFont(font);
 	scoreLabel.setString("Score: " + to_string(ship->score));
@@ -171,11 +184,14 @@ void Level1()
 
 	sf::Clock clock;
 	float deltaTime;
-
+	int activeAsteroids = 10;
 	// Start the game loop
-	while (window->isOpen() && !ship->isDead())
+	while (window->isOpen() && isPlaying)
 	{
 		deltaTime = clock.restart().asSeconds();
+
+		activeAsteroids = count_if(bucket.objects.begin(), bucket.objects.end(), [](GameObject *obj) { return obj->type == "asteroid"; });
+		//std::cout << "ASTEROIDS: " << activeAsteroids << std::endl;
 		// Process events
 		sf::Event event;
 		while (window->pollEvent(event))
@@ -194,6 +210,12 @@ void Level1()
 		// Clear screen
 		window->clear();
 
+		std::string powerup = ship->hasBurstShot ? "Burst" : "None";
+		powerup = ship->hasTrishot ? "Trishot" : powerup;
+
+		std::string invul = ship->isInvulnerable() ? "Invulnerable    " : "";
+
+		title2.setString(powerup + "      " + invul + " Armor: " + to_string(ship->armor));
 		title.setString("Lives: " + to_string(ship->hp));
 		scoreLabel.setString("Score: " + to_string(ship->score));
 
@@ -203,13 +225,142 @@ void Level1()
 
 		// Update the window
 		window->draw(title);
+		window->draw(title2);
 		window->draw(scoreLabel);
 		window->display();
+
+		if (!ship->isActive)
+		{
+			isPlaying = false;
+			hasWon = false;
+		}
+
+		if (activeAsteroids <= 0)
+		{
+			isPlaying = false;
+			hasWon = true;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+		{
+			isPlaying = false;
+			goMenu = true;
+			hasWon = false;
+		}
+	}
+	score += ship->score;
+	if (hasWon)
+		Level2();
+	else if (!hasWon && !goMenu)
+		GameOver();
+	else if (!hasWon && goMenu)
+		Menu();
+}
+void Level2()
+{
+	BucketGrid bucket;
+
+	int activeAsteroids = 20;
+
+	//Create rect;
+	for (int i = 0; i < activeAsteroids; i++)
+	{
+		//Do a dice roll, if it's 0, give armor.
+		bool hasArmor = (rand() % 10) < 1;
+		Asteroid *asteroid = new Asteroid(Vector2f(20, 20), rand() % 360, Vector2f(50, 50), window, &bucket);
+		asteroid->view.setPosition(rand() % window->getSize().x, rand() % window->getSize().y);
+		asteroid->armor = hasArmor;
+		bucket.Push(asteroid);
+	}
+
+	Ship *ship = new Ship(Vector2f(100, 100), Vector2f(0, 0), Vector2f(20, 20), window, &bucket);
+	//ship->hasBurstShot = true;
+	//ship->hasTrishot = true;
+	ship->score = score;
+	ship->view.setPosition(window->getSize().x * 0.5f, window->getSize().y * 0.5f);
+	bucket.Push(ship);
+
+	sf::Text title;
+	title.setFont(font);
+	title.setString("Lives: " + to_string(ship->hp));
+	title.setCharacterSize(21);
+	title.setFillColor(sf::Color::Yellow);
+	title.setOutlineColor(sf::Color::Black);
+	title.setOutlineThickness(2);
+	title.setPosition(window->getSize().x - title.getLocalBounds().width - margin * 2, window->getSize().y - title.getLocalBounds().height - margin * 2);
+
+	sf::Text title2;
+	title2.setFont(font);
+	title2.setString("None                       Armor: " + to_string(ship->armor));
+	title2.setCharacterSize(21);
+	title2.setFillColor(sf::Color::Yellow);
+	title2.setOutlineColor(sf::Color::Black);
+	title2.setOutlineThickness(2);
+	title2.setPosition(title.getPosition().x - title2.getLocalBounds().width - margin * 10, window->getSize().y - title2.getLocalBounds().height - margin * 2);
+
+	sf::Text scoreLabel;
+	scoreLabel.setFont(font);
+	scoreLabel.setString("Score: " + to_string(ship->score));
+	scoreLabel.setCharacterSize(21);
+	scoreLabel.setFillColor(sf::Color::Yellow);
+	scoreLabel.setOutlineColor(sf::Color::Black);
+	scoreLabel.setOutlineThickness(2);
+	scoreLabel.setPosition(margin * 2, window->getSize().y - scoreLabel.getLocalBounds().height - margin * 2);
+
+
+	sf::Clock clock;
+	float deltaTime;
+	// Start the game loop
+	while (window->isOpen() && !ship->isDead() && activeAsteroids > 0)
+	{
+		deltaTime = clock.restart().asSeconds();
+
+		activeAsteroids = count_if(bucket.objects.begin(), bucket.objects.end(), [](GameObject *obj) { return obj->type == "asteroid"; });
+		//std::cout << "ASTEROIDS: " << activeAsteroids << std::endl;
+		// Process events
+		sf::Event event;
+		while (window->pollEvent(event))
+		{
+			// Close window: exit
+			if (event.type == sf::Event::Closed) {
+				window->close();
+			}
+
+			// Escape pressed: exit
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+				window->close();
+			}
+		}
+
+		// Clear screen
+		window->clear();
+		std::string powerup = ship->hasBurstShot ? "Burst" : "None";
+		powerup = ship->hasTrishot ? "Trishot" : powerup;
+		std::string invul = ship->isInvulnerable() ? "Invulnerable    " : "";
+
+
+		title2.setString(powerup + "      " + invul + " Armor: " + to_string(ship->armor));
+		title.setString("Lives: " + to_string(ship->hp));
+		scoreLabel.setString("Score: " + to_string(ship->score));
+
+		window->draw(background);
+		//Update bucket;
+		bucket.Update(deltaTime);
+
+		// Update the window
+		window->draw(title);
+		window->draw(title2);
+		window->draw(scoreLabel);
+		window->display();
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+		{
+			isPlaying = false;
+		}
 	}
 
 	GameOver();
 }
-
 void GameOver()
 {
 	bool optionChosen = false;
@@ -245,11 +396,18 @@ void GameOver()
 		window->draw(subtitle);
 		window->display();
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
 		{
-			optionChosen = true;
+			isPlaying = false;
+			goMenu = true;
+			hasWon = false;
 		}
 	}
 
-	Menu();
+	if (hasWon)
+		Menu();
+	else if (!hasWon && !goMenu)
+		GameOver();
+	else if (!hasWon && goMenu)
+		Menu();
 }

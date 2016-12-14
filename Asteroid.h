@@ -16,6 +16,8 @@ class Asteroid : public MovingObject
 {
 public:
     int level = 1;
+	float collisionStart;
+	float collisionCooldown = 2.0f;
     //States;
     void Hit(); //hit by projectile
     void Hurt(){ if(armor > 0) {armor--; }else{ hp--;} }; //hurt

@@ -46,6 +46,8 @@ void MovingObject::Update(float deltaTime)
     
     //std::cout << "UPDATE MO" << std::endl;
     this->deltaTime = deltaTime;
+	currentTime += deltaTime;
+
     Move();
     Wrap();
     Draw();

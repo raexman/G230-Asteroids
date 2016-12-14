@@ -16,7 +16,8 @@ BucketGrid::BucketGrid()
 }
 BucketGrid::~BucketGrid()
 {
-    
+	objects.clear();
+	delete grid;
 }
 
 void BucketGrid::Update(float deltaTime)
@@ -78,7 +79,7 @@ void BucketGrid::Push(GameObject *obj)
 {
 	objects.push_back(obj);
 
-	Add(GetBucket(obj->getCenter()), obj);
+	//Add(GetBucket(obj->getCenter()), obj);
 }
 
 void BucketGrid::Pop(GameObject *obj)
@@ -99,7 +100,7 @@ void BucketGrid::Remove(Vector2i b, GameObject* obj)
 
     vector<GameObject*> &v = grid[b.x][b.y];
 
-    v.erase(remove(v.begin(), v.end(), obj));
+    remove(v.begin(), v.end(), obj);
 }
 
 
