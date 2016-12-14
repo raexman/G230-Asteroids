@@ -31,6 +31,9 @@ sf::Texture backgroundImage;
 sf::Sprite background;
 sf::RenderWindow *window;
 
+sf::SoundBuffer buffer;
+sf::Sound sound;
+
 Ship *ship;
 
 int margin = 10;
@@ -115,7 +118,7 @@ void Menu()
 			mode = 4;
 			optionChosen = true;
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
 		{
 			mode = 0;
 			optionChosen = true;
@@ -131,20 +134,26 @@ void Menu()
 }
 void Exit()
 {
+	delete ship;
+	return;
 
 }
 void Level1()
 {
+	buffer.loadFromFile("Assets/sounds/success.wav");
+	sound.setBuffer(buffer);
+	sound.play();
+
 	BucketGrid bucket;
 	isPlaying = true;
 	//Create rect;
 	for (int i = 0; i < 10; i++)
 	{
 		//Do a dice roll, if it's 0, give armor.
-		bool hasArmor = (rand() % 10) < 1;
+		bool hasArmor = (rand() % 5) < 1;
 		Asteroid *asteroid = new Asteroid(Vector2f(10, 10), rand() % 360, Vector2f(50, 50), window, &bucket);
 		asteroid->view.setPosition(rand() % window->getSize().x, rand() % window->getSize().y);
-		asteroid->armor = hasArmor;
+		asteroid->armor = hasArmor? 2 : 0;
 		bucket.Push(asteroid);
 	}
 
@@ -248,6 +257,7 @@ void Level1()
 			hasWon = false;
 		}
 	}
+
 	score += ship->score;
 	if (hasWon)
 		Level2();
@@ -258,6 +268,9 @@ void Level1()
 }
 void Level2()
 {
+	buffer.loadFromFile("Assets/sounds/success.wav");
+	sound.setBuffer(buffer);
+	sound.play();
 	BucketGrid bucket;
 
 	int activeAsteroids = 20;
@@ -356,9 +369,17 @@ void Level2()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
 		{
 			isPlaying = false;
+			goMenu = true;
+			hasWon = false;
 		}
 	}
 
+	if (hasWon)
+		Menu();
+	else if (!hasWon && !goMenu)
+		GameOver();
+	else if (!hasWon && goMenu)
+		Menu();
 	GameOver();
 }
 void GameOver()
@@ -396,18 +417,11 @@ void GameOver()
 		window->draw(subtitle);
 		window->display();
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 		{
-			isPlaying = false;
-			goMenu = true;
-			hasWon = false;
+			optionChosen = true;
 		}
 	}
 
-	if (hasWon)
-		Menu();
-	else if (!hasWon && !goMenu)
-		GameOver();
-	else if (!hasWon && goMenu)
-		Menu();
+	Menu();
 }

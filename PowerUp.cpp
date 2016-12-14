@@ -29,5 +29,8 @@ void PowerUp::Draw()
 
 void PowerUp::Collided(GameObject *other)
 {
-	if (other->type == "ship") { bucket->Pop(this); }
+	if (other->type == "ship")
+	{ 
+		bucket->Pop(this);
+	}
 }

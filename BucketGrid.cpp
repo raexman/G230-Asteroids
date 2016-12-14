@@ -85,6 +85,19 @@ void BucketGrid::Push(GameObject *obj)
 void BucketGrid::Pop(GameObject *obj)
 {
 	objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+
+	if (obj->type == "asteroid")
+	{
+		buffer.loadFromFile("Assets/sounds/asteroid.wav");
+		sound.setBuffer(buffer);
+		sound.play();
+	}
+	if (obj->type == "powerup")
+	{
+		buffer.loadFromFile("Assets/sounds/powerup.wav");
+		sound.setBuffer(buffer);
+		sound.play();
+	}
 }
 
 void BucketGrid::Add(Vector2i b, GameObject* obj)

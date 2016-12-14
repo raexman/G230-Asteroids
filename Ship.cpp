@@ -103,7 +103,7 @@ void Ship::GetPowerUp(PowerUp::PowerType power)
 			hasTrishot = false;
 			break;
 		case PowerUp::PowerType::shield:
-			armor++;
+			armor = 3;
 			break;
 		case PowerUp::PowerType::trishot:
 			hasTrishot = true;

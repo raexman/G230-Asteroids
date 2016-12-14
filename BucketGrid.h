@@ -23,7 +23,10 @@ public:
     static const int COLUMNS = 10;
     static const int ROWS = 10;
     
-    vector<GameObject*> objects;
+	sf::SoundBuffer buffer;
+	sf::Sound sound;
+
+	vector<GameObject*> objects;
     vector<GameObject*> grid[COLUMNS][ROWS];
     
     BucketGrid();

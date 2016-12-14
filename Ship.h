@@ -41,8 +41,15 @@ public:
     bool isShooting;
     
     //States;
-	void Hurt() { if (isInvulnerable()) return; if (armor > 0) { armor--; } else { hp--; } }; //hurt
-    void Hit(){ std::cout << type << " was hit!" << std::endl; Hurt(); if(hp <= 0) isActive = false; Reset(); }; //hit by projectile
+	void Hurt() { if (isInvulnerable()) return; if (armor > 0) { armor--; } else { hp--; Reset(); } }; //hurt
+	void Hit()
+	{ 
+		std::cout << type << " was hit!" << std::endl; Hurt(); 
+		if (hp <= 0) { isActive = false;     
+			buffer.loadFromFile("Assets/sounds/explosion.wav");
+			sound.setBuffer(buffer);
+			sound.play();}
+	}; //hit by projectile
     void Collided(GameObject *other); //collided
     
     //Getters/Setters;

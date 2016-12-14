@@ -51,7 +51,6 @@ void Asteroid::Hit()
     std::cout << "HP: " << hp << std::endl;
     if(hp <= 0)
     {
-
         Destroy();
     }
 }
@@ -102,10 +101,12 @@ void Asteroid::Subdivide()
     
     for(int i = 0; i < 2; i++)
     {
+		bool hasArmor = (rand() % 5) < 1;
+
         Asteroid *childAsteroid = new Asteroid(Vector2f(speed.x * 2, speed.y * 2), currentAngle + 135 * i, Vector2f(size.x*0.66f, size.y*0.66f), window, bucket);
         childAsteroid->level = level;
         childAsteroid->view.setPosition(this->view.getPosition());
-
+		childAsteroid->armor = hasArmor ? 2 : 0;
         bucket->Push(childAsteroid);
     }
 
